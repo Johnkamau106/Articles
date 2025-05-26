@@ -59,3 +59,15 @@ class Article:
         rows = cursor.fetchall()
         conn.close()
         return [cls(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
+
+    
+    @classmethod
+    def find_by_magazine(cls, magazine_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM articles WHERE magazine_id = ?", (magazine_id,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [cls(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
+
+    
