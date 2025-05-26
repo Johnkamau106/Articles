@@ -55,10 +55,45 @@ def get_by_id(cls, id):
             return cls(id=row[i'd'], name=row['name'])
 
 
+    def articles(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM articles WHERE author_id = ?", (self.id,))
+        rows = cursor.fetchall()
+        conn.close()
+        from lib.models.article import Article
+        return [Article(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
 
 
+     def magazines(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT m.* FROM magazines m
+            JOIN articles a ON m.id = a.magazine_id
+            WHERE a.author_id = ?
+        """, (self.id,))
+        rows = cursor.fetchall()
+        conn.close()
+        from lib.models.magazine import Magazine
+        return [Magazine(row['name'], row['category'], row['id']) for row in rows]
 
 
+    def add_article(self, magazine, title):
+        from lib.models.article import Article
+        article = Article(title, self.id, magazine.id)
+        article.save()
+        return article
 
-
+     def topic_areas(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT m.category FROM magazines m
+            JOIN articles a ON m.id = a.magazine_id
+            WHERE a.author_id = ?
+        """, (self.id,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [row['category'] for row in rows]
         

@@ -55,4 +55,13 @@ class Magazine():
         return [cls(id=row['id'], name=row['name'], category=row['category']) for row in rows]
 
 
-    
+    def articles(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM articles WHERE magazine_id = ?", (self.id,))
+        rows = cursor.fetchall()
+        conn.close()
+        from lib.models.article import Article
+        return [Article(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
+
+        
