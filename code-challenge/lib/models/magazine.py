@@ -19,3 +19,40 @@ class Magazine():
         cursor.execute("UPDATE magazines SET name = ?, category = ? WHERE id = ?", (self.name, self.category, self.id))
     conn.commit()
     conn.close()
+
+    
+    @classmethod
+    def find_by_id(cls, id):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM magazines WHERE id = ?", (id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row is None:
+            return None
+        return cls(id=row['id'], name=row['name'], category=row['category'])
+    
+
+    @classmethod
+    def find_by_name(cls, name):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM magazines WHERE name = ?", (name,))
+        row = cursor.fetchone()
+        conn.close()
+        if row is None:
+            return None
+        return cls(id=row['id'], name=row['name'], category=row['category'])
+
+
+     @classmethod
+    def find_by_category(cls, category):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM magazines WHERE category = ?", (category,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [cls(id=row['id'], name=row['name'], category=row['category']) for row in rows]
+
+
+    
