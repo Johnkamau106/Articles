@@ -1,11 +1,9 @@
 from lib.db.connection import get_connection
 
 class Author:
-    def __init__(self, id, name):
+    def __init__(self, name, id=None):
         self.id = id
         self.name = name
-
-
 
     def save(self):
         if self.name is None or len(self.name.strip()) == 0:
@@ -21,42 +19,35 @@ class Author:
         conn.commit()
         conn.close()
 
-
     def delete(self):
-         if self.id is not None:
+        if self.id is not None:
             conn = get_connection()
             cursor = conn.cursor()
             cursor.execute("DELETE FROM authors WHERE id = ?", (self.id,))
             conn.commit()
             conn.close()
 
-    
-@classmethod
-def get_by_id(cls, id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM authors WHERE id = ?", (id,))
-    row = cursor.fetchone()
-    conn.close()
-    
-    if row:
-        return cls(id=row[0], name=row[1])
-    else:
+    @classmethod
+    def find_by_id(cls, id):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM authors WHERE id = ?", (id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return cls(row['name'], row['id'])
         return None
 
-
-
-    def get_by_name(cls, name):
+    @classmethod
+    def find_by_name(cls, name):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM authors WHERE name = ?", (name,))
-        rows = cursor.fetchone()
+        row = cursor.fetchone()
         conn.close()
-        if rows is None
-            return None
-        else:
-            return cls(id=row[i'd'], name=row['name'])
-
+        if row:
+            return cls(row['name'], row['id'])
+        return None
 
     def articles(self):
         conn = get_connection()
@@ -67,8 +58,7 @@ def get_by_id(cls, id):
         from lib.models.article import Article
         return [Article(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
 
-
-     def magazines(self):
+    def magazines(self):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -81,14 +71,13 @@ def get_by_id(cls, id):
         from lib.models.magazine import Magazine
         return [Magazine(row['name'], row['category'], row['id']) for row in rows]
 
-
     def add_article(self, magazine, title):
         from lib.models.article import Article
         article = Article(title, self.id, magazine.id)
         article.save()
         return article
 
-     def topic_areas(self):
+    def topic_areas(self):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -99,4 +88,3 @@ def get_by_id(cls, id):
         rows = cursor.fetchall()
         conn.close()
         return [row['category'] for row in rows]
-        

@@ -1,12 +1,11 @@
 from lib.db.connection import get_connection
 
 class Article:
-     def __init__(self, id=None, title=None, author_id=None, magazine_id=None):
+    def __init__(self, title, author_id, magazine_id, id=None):
         self.id = id
         self.title = title
         self.author_id = author_id
         self.magazine_id = magazine_id
-
 
     def save(self):
         conn = get_connection()
@@ -23,13 +22,13 @@ class Article:
                 VALUES (?, ?, ?)
             """, (self.title, self.author_id, self.magazine_id))
             self.id = cursor.lastrowid
-            conn.commit()
-            conn.close()
+        conn.commit()
+        conn.close()
 
     def delete(self):
         conn = get_connection()
-        cursor + conn.cursor()
-        cursor.execute("DELETE FROM article where id = ?", (self.id,))
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM articles WHERE id = ?", (self.id,))
         conn.commit()
         conn.close()
 
@@ -62,7 +61,6 @@ class Article:
         conn.close()
         return [cls(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
 
-    
     @classmethod
     def find_by_magazine(cls, magazine_id):
         conn = get_connection()
@@ -79,5 +77,3 @@ class Article:
     def magazine(self):
         from lib.models.magazine import Magazine
         return Magazine.find_by_id(self.magazine_id)
-
-    

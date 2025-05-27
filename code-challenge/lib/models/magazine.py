@@ -1,112 +1,5 @@
 from lib.db.connection import get_connection
 
-class Magazine():
-      def __init__(self, id, name, category):
-            self.id = id
-            self.name = name
-            self.category = category
-
-    def save(self):
-        if self.nem is None or len(self.name.strip()) == 0:
-        raise ValueError("Magazine name cannot be empty")
-        if self.category is None or len(self.category.strip()) == 0:
-        raise ValueError("Magazine category cannot be empty")
-
-    conn = get_connection()
-    cursor = conn.cursor() 
-    if self.id is None:
-        cursor.execute("INSERT INTO magazines (name, category) VALUES (?, ?)", (self.name, self.category))
-        self.id = cursor.lastrowid
-    else:
-        cursor.execute("UPDATE magazines SET name = ?, category = ? WHERE id = ?", (self.name, self.category, self.id))
-    conn.commit()
-    conn.close()
-
-    
-    @classmethod
-    def find_by_id(cls, id):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM magazines WHERE id = ?", (id,))
-        row = cursor.fetchone()
-        conn.close()
-        if row is None:
-            return None
-        return cls(id=row['id'], name=row['name'], category=row['category'])
-    
-
-    @classmethod
-    def find_by_name(cls, name):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM magazines WHERE name = ?", (name,))
-        row = cursor.fetchone()
-        conn.close()
-        if row is None:
-            return None
-        return cls(id=row['id'], name=row['name'], category=row['category'])
-
-
-     @classmethod
-    def find_by_category(cls, category):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM magazines WHERE category = ?", (category,))
-        rows = cursor.fetchall()
-        conn.close()
-        return [cls(id=row['id'], name=row['name'], category=row['category']) for row in rows]
-
-
-    def articles(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM articles WHERE magazine_id = ?", (self.id,))
-        rows = cursor.fetchall()
-        conn.close()
-        from lib.models.article import Article
-        return [Article(row['title'], row['author_id'], row['magazine_id'], row['id']) for row in rows]
-
-         def contributors(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT DISTINCT a.* FROM authors a
-            JOIN articles ar ON a.id = ar.author_id
-            WHERE ar.magazine_id = ?
-        """, (self.id,))
-        rows = cursor.fetchall()
-        conn.close()
-        from lib.models.author import Author
-        return [Author(row['name'], row['id']) for row in rows]
-
-        def article_titles(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT title FROM articles WHERE magazine_id = ?", (self.id,))
-        rows = cursor.fetchall()
-        conn.close()
-        return [row['title'] for row in rows]
-
-
-         def contributing_authors(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT a.*, COUNT(ar.id) as article_count
-            FROM authors a
-            JOIN articles ar ON a.id = ar.author_id
-            WHERE ar.magazine_id = ?
-            GROUP BY a.id
-            HAVING article_count > 2
-        """, (self.id,))
-        rows = cursor.fetchall()
-        conn.close()
-        from lib.models.author import Author
-        return [Author(row['name'], row['id']) for row in rows]
-
-        on
-from lib.db.connection import get_connection
-
 class Magazine:
     def __init__(self, name, category, id=None):
         self.name = name
@@ -114,15 +7,20 @@ class Magazine:
         self.id = id
 
     def save(self):
+        if self.name is None or len(self.name.strip()) == 0:
+            raise ValueError("Magazine name cannot be empty")
+        if self.category is None or len(self.category.strip()) == 0:
+            raise ValueError("Magazine category cannot be empty")
+
         conn = get_connection()
         cursor = conn.cursor()
-        if self.id:
-            cursor.execute("UPDATE magazines SET name = ?, category = ? WHERE id = ?", 
-                         (self.name, self.category, self.id))
-        else:
+        if self.id is None:
             cursor.execute("INSERT INTO magazines (name, category) VALUES (?, ?)", 
                           (self.name, self.category))
             self.id = cursor.lastrowid
+        else:
+            cursor.execute("UPDATE magazines SET name = ?, category = ? WHERE id = ?", 
+                         (self.name, self.category, self.id))
         conn.commit()
         conn.close()
 
@@ -227,4 +125,4 @@ class Magazine:
         if row:
             return cls(row['name'], row['category'], row['id'])
         return None
-
+    

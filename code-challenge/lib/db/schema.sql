@@ -17,3 +17,4 @@ CREATE TABLE IF NOT EXISTS articles (
     FOREIGN KEY (author_id) REFERENCES authors(id),
     FOREIGN KEY (magazine_id) REFERENCES magazines(id)
 );
+
