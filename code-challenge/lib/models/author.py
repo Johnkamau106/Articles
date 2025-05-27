@@ -1,7 +1,10 @@
-class author:
-    def __init__(self, id, name:):
+from lib.db.connection import get_connection
+
+class Author:
+    def __init__(self, id, name):
         self.id = id
         self.name = name
+
 
 
     def save(self):

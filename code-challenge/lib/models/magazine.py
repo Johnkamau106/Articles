@@ -1,13 +1,15 @@
+from lib.db.connection import get_connection
+
 class Magazine():
       def __init__(self, id, name, category):
             self.id = id
             self.name = name
             self.category = category
 
-   def save(self):
-    if self.nem is None or len(self.name.strip()) == 0:
+    def save(self):
+        if self.nem is None or len(self.name.strip()) == 0:
         raise ValueError("Magazine name cannot be empty")
-    if self.category is None or len(self.category.strip()) == 0:
+        if self.category is None or len(self.category.strip()) == 0:
         raise ValueError("Magazine category cannot be empty")
 
     conn = get_connection()
