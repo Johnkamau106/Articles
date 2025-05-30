@@ -1,70 +1,52 @@
-# Articles Project
+# Articles Code Challenge
 
-A Python project for managing articles, authors, and magazines using a simple database-backed model.
+## Overview
 
-## Project Structure
-
-```
-code-challenge/
-  lib/
-    models/
-      author.py
-      # ... other model files
-    controllers/
-    db/
-    debug.py
-  scripts/
-    run_queries.py
-    setup_db.py
-  tests/
-    test_article.py
-    test_author.py
-    test_magazine.py
-README.md
-```
-
-## Features
-
-- Manage authors, articles, and magazines
-- Database-backed models
-- CRUD operations for each model
-- Unit tests for core functionality
+This project models the relationships between Authors, Articles, and Magazines using Python and SQLite.  
+- An Author can write many Articles  
+- A Magazine can publish many Articles  
+- Each Article belongs to one Author and one Magazine  
 
 ## Setup
 
-1. **Clone the repository**
-2. **Create a virtual environment**
-   ```sh
-   python3 -m venv env
-   source env/bin/activate
-   ```
-3. **Install dependencies**
-   ```sh
-   pip install -r requirements.txt
-   ```
-4. **Set up the database**
-   ```sh
-   python code-challenge/scripts/setup_db.py
-   ```
+1. Create and activate a virtual environment:
 
-## Running
+```bash
+python -m venv env
+source env/bin/activate  # On Windows: env\Scripts\activate
+Install dependencies:
 
-- To run queries or interact with the database:
-  ```sh
-  python code-challenge/scripts/run_queries.py
-  ```
+bash
+Copy
+Edit
+pip install pytest sqlite3
+Set up the database:
 
-## Testing
+bash
+Copy
+Edit
+python scripts/setup_db.py
+Seed the database with sample data:
 
-- To run all tests:
-  ```sh
-  pytest code-challenge/tests/
-  ```
+bash
+Copy
+Edit
+python -m lib.db.seed
+Testing
+Run all tests with:
 
-## License
+bash
+Copy
+Edit
+pytest
+Project Structure
+lib/models/ — Python classes for Authors, Articles, and Magazines
 
-This project is licensed under the MIT License.
+lib/db/ — Database connection, schema, and seed data
 
----
+tests/ — Test cases for each model
 
-Feel free to contribute or open issues!
+scripts/ — Database setup and example query scripts
+
+Author
+John Kamau

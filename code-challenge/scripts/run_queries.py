@@ -3,6 +3,8 @@ from lib.models.author import Author
 from lib.models.magazine import Magazine
 from lib.models.article import Article
 from lib.db.seed import seed_database
+from lib.db.connection import get_connection
+
 
 def print_header(title):
     print("\n" + "="*50)
@@ -150,3 +152,4 @@ def run_queries():
 
 if __name__ == '__main__':
     run_queries()
+    

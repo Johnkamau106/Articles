@@ -1,43 +1,48 @@
-
+# lib/db/seed.py
+from lib.db.connection import get_connection
+from lib.models.author import Author
+from lib.models.magazine import Magazine
+from lib.models.article import Article
 
 def seed_database():
-    # Clear existing data
     conn = get_connection()
     cursor = conn.cursor()
+    
+    # Clear existing data
     cursor.execute("DELETE FROM articles")
     cursor.execute("DELETE FROM authors")
     cursor.execute("DELETE FROM magazines")
     conn.commit()
+    
+    # Create sample authors
+    authors = [
+        Author("John Doe"),
+        Author("Jane Smith"),
+        Author("Bob Johnson")
+    ]
+    for author in authors:
+        author.save()
+    
+    # Create sample magazines
+    magazines = [
+        Magazine("Tech Today", "Technology"),
+        Magazine("Science Weekly", "Science"),
+        Magazine("Business Insights", "Business")
+    ]
+    for magazine in magazines:
+        magazine.save()
+    
+    # Create sample articles
+    articles = [
+        Article("The Future of AI", authors[0].id, magazines[0].id),
+        Article("Quantum Computing Breakthrough", authors[1].id, magazines[1].id),
+        Article("Market Trends 2023", authors[2].id, magazines[2].id),
+        Article("Python for Data Science", authors[0].id, magazines[0].id),
+        Article("Renewable Energy Advances", authors[1].id, magazines[1].id)
+    ]
+    for article in articles:
+        article.save()
+    
     conn.close()
-
-  # Create authors
-    author1 = Author("John Doe")
-    author1.save()
-    author2 = Author("Jane Smith")
-    author2.save()
-    author3 = Author("Bob Johnson")
-    author3.save()
-
-# Create magazines
-    magazine1 = Magazine("Tech Today", "Technology")
-    magazine1.save()
-    magazine2 = Magazine("Science Weekly", "Science")
-    magazine2.save()
-    magazine3 = Magazine("Business Insights", "Business")
-    magazine3.save()
-
-# Create articles
-    article1 = Article("Python Programming", author1.id, magazine1.id)
-    article1.save()
-    article2 = Article("Machine Learning", author1.id, magazine1.id)
-    article2.save()
-    article3 = Article("Quantum Physics", author2.id, magazine2.id)
-    article3.save()
-    article4 = Article("Market Trends", author3.id, magazine3.id)
-    article4.save()
-    article5 = Article("AI Ethics", author1.id, magazine2.id)
-    article5.save()
-    article6 = Article("Startup Funding", author3.id, magazine3.id)
-    article6.save()
-
     print("Database seeded successfully!")
+    

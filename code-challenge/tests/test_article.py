@@ -1,49 +1,67 @@
 import pytest
+from lib.models.article import Article
 from lib.models.author import Author
 from lib.models.magazine import Magazine
-from lib.models.article import Article
 from lib.db.connection import get_connection
 
 @pytest.fixture
 def setup_db():
     conn = get_connection()
     cursor = conn.cursor()
+
+    # Clean tables
     cursor.execute("DELETE FROM articles")
     cursor.execute("DELETE FROM authors")
     cursor.execute("DELETE FROM magazines")
-    conn.commit()
+    conn.commit()  # <-- Added commit here to avoid locking
 
-    # Create test data
+    # Setup sample data
     author = Author("Test Author")
     author.save()
-    magazine = Magazine("Test Magazine", "Test")
+    magazine = Magazine("Test Magazine", "Test Category")
     magazine.save()
     article = Article("Test Article", author.id, magazine.id)
     article.save()
-    
+
     yield
+
     conn.close()
 
-def test_author_save_and_find(setup_db):
-    author = Author.find_by_name("Test Author")
-    assert author is not None
-    assert author.name == "Test Author"
-
-def test_author_articles(setup_db):
-    author = Author.find_by_name("Test Author")
-    articles = author.articles()
+def test_article_creation(setup_db):
+    articles = Article.find_by_title("Test Article")
     assert len(articles) == 1
-    assert articles[0].title == "Test Article"
+    article = articles[0]
+    assert article.title == "Test Article"
 
-def test_author_magazines(setup_db):
-    author = Author.find_by_name("Test Author")
-    magazines = author.magazines()
-    assert len(magazines) == 1
-    assert magazines[0].name == "Test Magazine"
+def test_article_relationships(setup_db):
+    article = Article.find_by_title("Test Article")[0]
+    author = article.author()
+    magazine = article.magazine()
 
-def test_author_add_article(setup_db):
+    assert author.name == "Test Author"
+    assert magazine.name == "Test Magazine"
+
+def test_find_by_author(setup_db):
     author = Author.find_by_name("Test Author")
+    articles = Article.find_by_author(author.id)
+    assert any(a.title == "Test Article" for a in articles)
+
+def test_find_by_magazine(setup_db):
     magazine = Magazine.find_by_name("Test Magazine")
-    new_article = author.add_article(magazine, "New Article")
-    assert new_article.title == "New Article"
-    assert len(author.articles()) == 2
+    articles = Article.find_by_magazine(magazine.id)
+    assert any(a.title == "Test Article" for a in articles)
+
+def test_article_save_update(setup_db):
+    article = Article.find_by_title("Test Article")[0]
+    article.title = "Updated Title"
+    article.save()
+
+    updated = Article.find_by_id(article.id)
+    assert updated.title == "Updated Title"
+
+def test_article_delete(setup_db):
+    article = Article.find_by_title("Test Article")[0]
+    article.delete()
+
+    deleted = Article.find_by_id(article.id)
+    assert deleted is None

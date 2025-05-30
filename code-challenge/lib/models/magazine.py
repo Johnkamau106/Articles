@@ -126,3 +126,4 @@ class Magazine:
             return cls(row['name'], row['category'], row['id'])
         return None
     
+    
